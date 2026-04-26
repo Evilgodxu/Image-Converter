@@ -62,9 +62,6 @@ class HomeViewModel(
 
     fun setSelectedImages(context: Context, uris: List<Uri>) {
         viewModelScope.launch {
-            // 清理旧临时文件
-            clearTempImages(context)
-
             val imageInfos = withContext(Dispatchers.IO) {
                 uris.mapNotNull { uri ->
                     val name = getFileNameFromUri(context, uri)
@@ -91,9 +88,6 @@ class HomeViewModel(
     fun setExternalImages(context: Context, uris: List<Uri>) {
         viewModelScope.launch {
             val imageInfos = withContext(Dispatchers.IO) {
-                // 先清理旧临时文件
-                clearTempImages(context)
-
                 uris.mapNotNull { uri ->
                     val name = getFileNameFromUri(context, uri)
                     if (name.isEmpty() || name == "unknown") return@mapNotNull null
@@ -176,9 +170,6 @@ class HomeViewModel(
             _uiState.value = _uiState.value.copy(isScanningDirectory = true)
 
             val images = withContext(Dispatchers.IO) {
-                // 清理旧临时文件
-                clearTempImages(context)
-
                 getImagesFromDirectoryBfs(context, treeUri)
             }
 
@@ -323,6 +314,9 @@ class HomeViewModel(
                     else -> ConvertStatus.Success(outputUris)
                 }
             )
+
+            // 转换完成后清理临时文件
+            clearTempImages(context)
         }
     }
 
