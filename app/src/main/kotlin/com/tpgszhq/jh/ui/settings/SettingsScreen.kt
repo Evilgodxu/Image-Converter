@@ -1,5 +1,6 @@
 package com.tpgszhq.jh.ui.settings
 
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,12 +30,22 @@ fun SettingsScreen(onNavigateBack: () -> Unit, viewModel: SettingsViewModel = ko
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val windowSizeInfo = rememberWindowSizeInfo()
 
+    val context = LocalContext.current
+
     // 目录选择器
     val directoryPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocumentTree(),
     ) { treeUri ->
-        treeUri?.let {
-            viewModel.setOutputDirectory(it)
+        treeUri?.let { uri ->
+            // 获取持久化权限
+            try {
+                val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                context.contentResolver.takePersistableUriPermission(uri, takeFlags)
+            } catch (e: Exception) {
+                // 权限获取失败，继续尝试使用
+            }
+            viewModel.setOutputDirectory(uri)
         }
     }
 
