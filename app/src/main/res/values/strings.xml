@@ -29,6 +29,7 @@
     <string name="home_convert_success">转换成功</string>
     <string name="home_convert_failed">转换失败</string>
     <string name="home_scanning">扫描中…</string>
+    <string name="home_converting_progress">转换中 %1$d/%2$d</string>
     <string name="home_quality_worst">最差质量</string>
     <string name="home_quality_best">最优质量</string>
     <string name="error_load_image">无法加载图片: %s</string>
