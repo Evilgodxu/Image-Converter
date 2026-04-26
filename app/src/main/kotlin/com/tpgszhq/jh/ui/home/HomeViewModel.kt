@@ -1,7 +1,6 @@
 package com.tpgszhq.jh.ui.home
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -43,44 +42,12 @@ class HomeViewModel(
             val imageInfos = withContext(Dispatchers.IO) {
                 uris.mapNotNull { uri ->
                     val name = getFileNameFromUri(context, uri)
-
-                    try {
-                        // 尝试申请持久化权限
-                        val contentResolver = context.contentResolver
-                        val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                        contentResolver.takePersistableUriPermission(uri, takeFlags)
-
-                        // 验证URI是否可访问
-                        val canRead = try {
-                            contentResolver.openInputStream(uri)?.close()
-                            true
-                        } catch (e: Exception) {
-                            false
-                        }
-
-                        if (canRead) {
-                            ImageInfo(
-                                uri = uri,
-                                name = name,
-                            )
-                        } else {
-                            // 如果无法直接访问，复制到临时目录
-                            copyImageToTemp(context, uri, name)?.let { tempUri ->
-                                ImageInfo(
-                                    uri = tempUri,
-                                    name = name,
-                                )
-                            }
-                        }
-                    } catch (e: Exception) {
-                        // 持久化权限申请失败，复制到临时目录
-                        copyImageToTemp(context, uri, name)?.let { tempUri ->
-                            ImageInfo(
-                                uri = tempUri,
-                                name = name,
-                            )
-                        }
+                    // 立即复制到临时目录
+                    copyImageToTemp(context, uri, name)?.let { tempUri ->
+                        ImageInfo(
+                            uri = tempUri,
+                            name = name,
+                        )
                     }
                 }
             }
@@ -105,44 +72,12 @@ class HomeViewModel(
                     val name = getFileNameFromUri(context, uri)
                     if (name.isEmpty() || name == "unknown") return@mapNotNull null
 
-                    try {
-                        // 尝试申请持久化权限
-                        val contentResolver = context.contentResolver
-                        val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                        contentResolver.takePersistableUriPermission(uri, takeFlags)
-
-                        // 验证URI是否可访问
-                        val canRead = try {
-                            contentResolver.openInputStream(uri)?.close()
-                            true
-                        } catch (e: Exception) {
-                            false
-                        }
-
-                        if (canRead) {
-                            // 持久化权限申请成功且可访问，直接使用原URI
-                            ImageInfo(
-                                uri = uri,
-                                name = name,
-                            )
-                        } else {
-                            // 无法访问，复制到临时目录
-                            copyImageToTemp(context, uri, name)?.let { tempUri ->
-                                ImageInfo(
-                                    uri = tempUri,
-                                    name = name,
-                                )
-                            }
-                        }
-                    } catch (e: Exception) {
-                        // 分享传入的URI不支持持久化权限，需要立即复制到临时目录
-                        copyImageToTemp(context, uri, name)?.let { tempUri ->
-                            ImageInfo(
-                                uri = tempUri,
-                                name = name,
-                            )
-                        }
+                    // 立即复制到临时目录
+                    copyImageToTemp(context, uri, name)?.let { tempUri ->
+                        ImageInfo(
+                            uri = tempUri,
+                            name = name,
+                        )
                     }
                 }
             }
@@ -500,7 +435,7 @@ class HomeViewModel(
         }
     }
 
-    // 使用BFS（广度优先搜索）批量查询目录中的所有图片
+    // 使用BFS（广度优先搜索）批量查询目录中的所有图片，并立即复制到临时文件
     private fun getImagesFromDirectoryBfs(context: Context, treeUri: Uri): List<ImageInfo> {
         val images = mutableListOf<ImageInfo>()
         val contentResolver = context.contentResolver
@@ -543,11 +478,14 @@ class HomeViewModel(
                         when {
                             mimeType?.startsWith("image/") == true -> {
                                 val documentUri = DocumentsContract.buildDocumentUriUsingTree(treeUri, documentId)
-                                images.add(ImageInfo(
-                                    uri = documentUri,
-                                    name = displayName,
-                                    relativePath = currentRelativePath,
-                                ))
+                                // 立即复制到临时目录
+                                copyImageToTemp(context, documentUri, displayName)?.let { tempUri ->
+                                    images.add(ImageInfo(
+                                        uri = tempUri,
+                                        name = displayName,
+                                        relativePath = currentRelativePath,
+                                    ))
+                                }
                             }
                             mimeType == DocumentsContract.Document.MIME_TYPE_DIR -> {
                                 val newRelativePath = if (currentRelativePath.isEmpty()) {
