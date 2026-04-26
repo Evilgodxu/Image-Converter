@@ -1,0 +1,62 @@
+<resources>
+    <string name="app_name">Image Converter</string>
+
+    <!-- 隐私页 -->
+    <string name="privacy_title">Privacy Policy</string>
+    <string name="privacy_permissions_title">App Permissions</string>
+    <string name="privacy_permissions_content">This app does not require any system permissions to function properly.\n\nAll features are implemented using standard Android components without requesting additional permissions.</string>
+    <string name="privacy_data_collection_title">Data Collection</string>
+    <string name="privacy_data_collection_content">This app does not collect any personal information.\n\nOnly the following local settings are stored:\n• Theme preference\n• Language preference\n• Output directory setting\n\nAll data is stored locally on your device only and will not be uploaded to any server.</string>
+    <string name="privacy_network_title">Network Connection</string>
+    <string name="privacy_network_content">This app works completely offline and does not require network connection.\n\nAll image processing is done locally on your device. No data is sent to the internet.</string>
+    <string name="privacy_accept">Accept</string>
+    <string name="privacy_reject">Decline</string>
+
+    <!-- 主页 -->
+    <string name="home_title">Image Format Converter</string>
+    <string name="home_preview_description">Image Preview</string>
+    <string name="home_format_jpg">JPG</string>
+    <string name="home_format_png">PNG</string>
+    <string name="home_format_webp">WEBP</string>
+    <string name="home_convert">Convert</string>
+    <string name="home_select_multiple">Select Images</string>
+    <string name="home_select_directory">Select Directory</string>
+    <string name="home_current_image">%1$d / %2$d</string>
+    <string name="home_tab_format">Format</string>
+    <string name="home_tab_quality">Quality</string>
+    <string name="home_quality_label">Quality: %d%%</string>
+    <string name="home_converting">Converting…</string>
+    <string name="home_convert_success">Conversion Successful</string>
+    <string name="home_convert_failed">Conversion Failed</string>
+    <string name="home_scanning">Scanning…</string>
+    <string name="home_quality_worst">Worst Quality</string>
+    <string name="home_quality_best">Best Quality</string>
+    <string name="error_load_image">Failed to load image: %s</string>
+    <string name="error_convert_image">Conversion failed: %s</string>
+    <string name="error_unknown">Unknown error</string>
+    <string name="default_file_name">unknown</string>
+
+    <!-- 设置页 -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_theme_title">Theme Settings</string>
+    <string name="settings_language_title">Language Settings</string>
+    <string name="settings_output_directory_title">Output Directory</string>
+    <string name="settings_output_directory_select">Select Directory</string>
+    <string name="settings_output_directory_change">Change</string>
+    <string name="settings_output_directory_clear">Clear</string>
+    <string name="settings_output_directory_not_set">Not set, will prompt during conversion</string>
+    <string name="settings_output_directory_current">Current Directory</string>
+
+    <!-- 主题选项 -->
+    <string name="theme_system">System Default</string>
+    <string name="theme_light">Always Light</string>
+    <string name="theme_dark">Always Dark</string>
+
+    <!-- 语言选项 -->
+    <string name="language_system">System Default</string>
+    <string name="language_chinese">中文</string>
+    <string name="language_english">English</string>
+
+    <!-- 通用 -->
+    <string name="back">Back</string>
+</resources>

@@ -1,0 +1,62 @@
+<resources>
+    <string name="app_name">图片转换</string>
+
+    <!-- 隐私页 -->
+    <string name="privacy_title">隐私政策</string>
+    <string name="privacy_permissions_title">应用权限</string>
+    <string name="privacy_permissions_content">本应用不需要任何系统权限即可正常运行。\n\n所有功能均基于 Android 系统提供的标准组件实现，无需申请额外权限。</string>
+    <string name="privacy_data_collection_title">数据收集</string>
+    <string name="privacy_data_collection_content">本应用不收集任何用户个人信息。\n\n仅存储以下本地设置：\n• 主题偏好\n• 语言偏好\n• 输出目录设置\n\n所有数据仅保存在您的设备本地，不会上传至任何服务器。</string>
+    <string name="privacy_network_title">网络连接</string>
+    <string name="privacy_network_content">本应用完全离线运行，不需要网络连接。\n\n所有图片处理均在本地完成，不会将任何数据发送至互联网。</string>
+    <string name="privacy_accept">同意</string>
+    <string name="privacy_reject">拒绝</string>
+
+    <!-- 主页 -->
+    <string name="home_title">图片格式转换</string>
+    <string name="home_preview_description">图片预览</string>
+    <string name="home_format_jpg">JPG</string>
+    <string name="home_format_png">PNG</string>
+    <string name="home_format_webp">WEBP</string>
+    <string name="home_convert">开始转换</string>
+    <string name="home_select_multiple">选择图片</string>
+    <string name="home_select_directory">选择目录</string>
+    <string name="home_current_image">%1$d / %2$d</string>
+    <string name="home_tab_format">格式</string>
+    <string name="home_tab_quality">质量</string>
+    <string name="home_quality_label">质量: %d%%</string>
+    <string name="home_converting">转换中…</string>
+    <string name="home_convert_success">转换成功</string>
+    <string name="home_convert_failed">转换失败</string>
+    <string name="home_scanning">扫描中…</string>
+    <string name="home_quality_worst">最差质量</string>
+    <string name="home_quality_best">最优质量</string>
+    <string name="error_load_image">无法加载图片: %s</string>
+    <string name="error_convert_image">转换失败: %s</string>
+    <string name="error_unknown">未知错误</string>
+    <string name="default_file_name">unknown</string>
+
+    <!-- 设置页 -->
+    <string name="settings_title">设置</string>
+    <string name="settings_theme_title">主题设置</string>
+    <string name="settings_language_title">语言设置</string>
+    <string name="settings_output_directory_title">输出目录</string>
+    <string name="settings_output_directory_select">选择目录</string>
+    <string name="settings_output_directory_change">更改</string>
+    <string name="settings_output_directory_clear">清除</string>
+    <string name="settings_output_directory_not_set">未设置，转换时将提示选择</string>
+    <string name="settings_output_directory_current">当前目录</string>
+
+    <!-- 主题选项 -->
+    <string name="theme_system">跟随系统</string>
+    <string name="theme_light">始终浅色</string>
+    <string name="theme_dark">始终深色</string>
+
+    <!-- 语言选项 -->
+    <string name="language_system">跟随系统</string>
+    <string name="language_chinese">中文</string>
+    <string name="language_english">English</string>
+
+    <!-- 通用 -->
+    <string name="back">返回</string>
+</resources>
