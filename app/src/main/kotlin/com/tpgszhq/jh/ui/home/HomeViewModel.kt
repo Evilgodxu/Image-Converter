@@ -41,12 +41,47 @@ class HomeViewModel(
             clearTempImages(context)
 
             val imageInfos = withContext(Dispatchers.IO) {
-                uris.map { uri ->
+                uris.mapNotNull { uri ->
                     val name = getFileNameFromUri(context, uri)
-                    ImageInfo(
-                        uri = uri,
-                        name = name,
-                    )
+
+                    try {
+                        // 尝试申请持久化权限
+                        val contentResolver = context.contentResolver
+                        val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                        contentResolver.takePersistableUriPermission(uri, takeFlags)
+
+                        // 验证URI是否可访问
+                        val canRead = try {
+                            contentResolver.openInputStream(uri)?.close()
+                            true
+                        } catch (e: Exception) {
+                            false
+                        }
+
+                        if (canRead) {
+                            ImageInfo(
+                                uri = uri,
+                                name = name,
+                            )
+                        } else {
+                            // 如果无法直接访问，复制到临时目录
+                            copyImageToTemp(context, uri, name)?.let { tempUri ->
+                                ImageInfo(
+                                    uri = tempUri,
+                                    name = name,
+                                )
+                            }
+                        }
+                    } catch (e: Exception) {
+                        // 持久化权限申请失败，复制到临时目录
+                        copyImageToTemp(context, uri, name)?.let { tempUri ->
+                            ImageInfo(
+                                uri = tempUri,
+                                name = name,
+                            )
+                        }
+                    }
                 }
             }
 
@@ -71,20 +106,38 @@ class HomeViewModel(
                     if (name.isEmpty() || name == "unknown") return@mapNotNull null
 
                     try {
-                        // 尝试申请持久化权限（仅适用于SAF选择的文件）
+                        // 尝试申请持久化权限
                         val contentResolver = context.contentResolver
                         val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or
                                 Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                         contentResolver.takePersistableUriPermission(uri, takeFlags)
 
-                        // 持久化权限申请成功，直接使用原URI
-                        ImageInfo(
-                            uri = uri,
-                            name = name,
-                        )
+                        // 验证URI是否可访问
+                        val canRead = try {
+                            contentResolver.openInputStream(uri)?.close()
+                            true
+                        } catch (e: Exception) {
+                            false
+                        }
+
+                        if (canRead) {
+                            // 持久化权限申请成功且可访问，直接使用原URI
+                            ImageInfo(
+                                uri = uri,
+                                name = name,
+                            )
+                        } else {
+                            // 无法访问，复制到临时目录
+                            copyImageToTemp(context, uri, name)?.let { tempUri ->
+                                ImageInfo(
+                                    uri = tempUri,
+                                    name = name,
+                                )
+                            }
+                        }
                     } catch (e: Exception) {
                         // 分享传入的URI不支持持久化权限，需要立即复制到临时目录
-                        copySharedImageToTemp(context, uri, name)?.let { tempUri ->
+                        copyImageToTemp(context, uri, name)?.let { tempUri ->
                             ImageInfo(
                                 uri = tempUri,
                                 name = name,
@@ -108,10 +161,13 @@ class HomeViewModel(
     // 清理临时文件目录
     private fun clearTempImages(context: Context) {
         try {
-            val tempDir = File(context.cacheDir, "shared_images")
-            if (tempDir.exists()) {
-                tempDir.listFiles()?.forEach { file ->
-                    file.delete()
+            // 清理新旧临时目录
+            listOf("shared_images", "temp_images").forEach { dirName ->
+                val tempDir = File(context.cacheDir, dirName)
+                if (tempDir.exists()) {
+                    tempDir.listFiles()?.forEach { file ->
+                        file.delete()
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -119,13 +175,21 @@ class HomeViewModel(
         }
     }
 
-    // 将分享的图片复制到应用临时目录
-    private fun copySharedImageToTemp(context: Context, sourceUri: Uri, fileName: String): Uri? {
+    // 将图片复制到应用临时目录
+    private fun copyImageToTemp(context: Context, sourceUri: Uri, fileName: String): Uri? {
         return try {
-            val tempDir = File(context.cacheDir, "shared_images").apply {
+            val tempDir = File(context.cacheDir, "temp_images").apply {
                 if (!exists()) mkdirs()
             }
-            val tempFile = File(tempDir, fileName)
+            // 生成唯一文件名避免冲突
+            val uniqueFileName = if (fileName.contains(".")) {
+                val extension = fileName.substringAfterLast(".")
+                val baseName = fileName.substringBeforeLast(".")
+                "${baseName}_${System.currentTimeMillis()}.$extension"
+            } else {
+                "${fileName}_${System.currentTimeMillis()}"
+            }
+            val tempFile = File(tempDir, uniqueFileName)
 
             context.contentResolver.openInputStream(sourceUri)?.use { input ->
                 FileOutputStream(tempFile).use { output ->
@@ -138,6 +202,11 @@ class HomeViewModel(
             e.printStackTrace()
             null
         }
+    }
+
+    // 将分享的图片复制到应用临时目录（兼容旧方法名）
+    private fun copySharedImageToTemp(context: Context, sourceUri: Uri, fileName: String): Uri? {
+        return copyImageToTemp(context, sourceUri, fileName)
     }
 
     // 从目录加载图片（使用BFS批量查询，在后台线程执行）
@@ -302,8 +371,26 @@ class HomeViewModel(
 
     private fun loadBitmap(context: Context, uri: Uri): Bitmap? {
         return try {
-            context.contentResolver.openInputStream(uri)?.use { inputStream ->
+            // 首先尝试直接读取
+            val bitmap = context.contentResolver.openInputStream(uri)?.use { inputStream ->
                 BitmapFactory.decodeStream(inputStream)
+            }
+
+            if (bitmap != null) {
+                return bitmap
+            }
+
+            // 如果直接读取失败且是content URI，尝试通过文件描述符读取
+            if (uri.scheme == "content") {
+                try {
+                    context.contentResolver.openFileDescriptor(uri, "r")?.use { pfd ->
+                        BitmapFactory.decodeFileDescriptor(pfd.fileDescriptor)
+                    }
+                } catch (e: Exception) {
+                    null
+                }
+            } else {
+                null
             }
         } catch (e: Exception) {
             null
