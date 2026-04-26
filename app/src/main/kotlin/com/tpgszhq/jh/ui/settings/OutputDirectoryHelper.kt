@@ -11,16 +11,16 @@ object OutputDirectoryHelper {
 
     /**
      * 从 SAF URI 中提取可读的文件夹路径显示
-     * 
+     *
      * @param context 上下文
      * @param uriString URI 字符串
-     * @return 可读的文件夹路径，如 "内部存储/DCIM/Camera" 或原始 URI（无法解析时）
+     * @return 可读的文件夹路径，如 "/storage/emulated/0/DCIM/Camera" 或原始 URI（无法解析时）
      */
     fun getReadablePath(context: Context, uriString: String?): String? {
         if (uriString.isNullOrEmpty()) return null
 
         val uri = Uri.parse(uriString)
-        
+
         // 尝试从 DocumentsContract 解析路径
         val pathFromDocument = getPathFromDocumentUri(context, uri)
         if (pathFromDocument != null) {
@@ -52,8 +52,8 @@ object OutputDirectoryHelper {
     }
 
     /**
-     * 解析文档 ID，转换为可读路径
-     * 例如："primary:DCIM/Camera" -> "内部存储/DCIM/Camera"
+     * 解析文档 ID，转换为真实路径
+     * 例如："primary:DCIM/Camera" -> "/storage/emulated/0/DCIM/Camera"
      */
     private fun parseDocumentPath(documentId: String?): String? {
         if (documentId.isNullOrEmpty()) return null
@@ -62,16 +62,16 @@ object OutputDirectoryHelper {
         val storageType = parts.getOrNull(0) ?: return documentId
         val path = parts.getOrNull(1) ?: ""
 
-        val storageName = when (storageType.lowercase()) {
-            "primary" -> "内部存储"
-            "home" -> "主目录"
-            else -> storageType
+        val storagePath = when (storageType.lowercase()) {
+            "primary" -> "/storage/emulated/0"
+            "home" -> "/storage/emulated/0"
+            else -> "/storage/$storageType"
         }
 
         return if (path.isNotEmpty()) {
-            "$storageName/$path"
+            "$storagePath/$path"
         } else {
-            storageName
+            storagePath
         }
     }
 
