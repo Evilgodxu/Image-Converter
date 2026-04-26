@@ -1,5 +1,6 @@
 package com.tpgszhq.jh.ui.home
 
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -67,12 +68,27 @@ fun HomeScreen(
         }
     }
 
+    // 验证输出目录权限
+    LaunchedEffect(Unit) {
+        if (uiState.outputDirectory != null) {
+            viewModel.validateOutputDirectory(context)
+        }
+    }
+
     // 输出目录选择器（首次转换时使用）
     val outputDirectoryPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocumentTree(),
     ) { treeUri ->
-        treeUri?.let {
-            viewModel.setOutputDirectory(it)
+        treeUri?.let { uri ->
+            // 获取持久化权限
+            try {
+                val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                context.contentResolver.takePersistableUriPermission(uri, takeFlags)
+            } catch (e: Exception) {
+                // 权限获取失败，继续尝试使用
+            }
+            viewModel.setOutputDirectory(uri)
             // 设置目录后自动开始转换
             viewModel.convertAllImages(context)
         } ?: run {
