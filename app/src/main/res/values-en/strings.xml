@@ -29,6 +29,7 @@
     <string name="home_convert_success">Conversion Successful</string>
     <string name="home_convert_failed">Conversion Failed</string>
     <string name="home_scanning">Scanning…</string>
+    <string name="home_converting_progress">Converting %1$d/%2$d</string>
     <string name="home_quality_worst">Worst Quality</string>
     <string name="home_quality_best">Best Quality</string>
     <string name="error_load_image">Failed to load image: %s</string>
