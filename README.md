@@ -10,5 +10,3 @@
 If this helps you, please consider tipping if you can. *shrugs* ☝️😭
 
 如果这能帮到你，请尽你所能打赏。摊手乞讨！☝️😭
-
-注意:已改进图片导入方式,但并未更新到发布版
