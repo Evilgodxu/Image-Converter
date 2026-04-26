@@ -5,17 +5,17 @@
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
+# 排除 Kotlin 协程调试文件 DebugProbesKt.bin
+-dontwarn kotlinx.coroutines.debug.*
+-keep class kotlinx.coroutines.debug.DebugProbesKt { *; }
+
+# 如果项目使用 WebView 与 JS，取消以下注释并指定 JavaScript 接口的完全限定类名:
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
+# 取消此注释以保留行号信息用于调试堆栈跟踪
 #-keepattributes SourceFile,LineNumberTable
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
+# 如果保留行号信息，取消此注释以隐藏原始源文件名
 #-renamesourcefileattribute SourceFile
