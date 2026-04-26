@@ -398,6 +398,8 @@ private fun ImagePreviewCard(
                     model = ImageRequest.Builder(context)
                         .data(imageInfo.uri)
                         .crossfade(true)
+                        .diskCachePolicy(coil3.request.CachePolicy.DISABLED)
+                        .memoryCachePolicy(coil3.request.CachePolicy.DISABLED)
                         .build(),
                     contentDescription = stringResource(R.string.home_preview_description),
                     modifier = Modifier.fillMaxSize(),
@@ -424,8 +426,13 @@ private fun ImagePreviewCard(
                             strokeWidth = 4.dp,
                         )
                         Text(
-                            text = status?.let { "转换中 ${it.current}/${it.total}" }
-                                ?: stringResource(R.string.home_converting),
+                            text = status?.let {
+                                stringResource(
+                                    R.string.home_converting_progress,
+                                    it.current,
+                                    it.total
+                                )
+                            } ?: stringResource(R.string.home_converting),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onPrimary,
                         )
