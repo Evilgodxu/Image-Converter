@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,8 +59,8 @@ fun HomeScreen(
     } else {
         WindowInsets(0, 0, 0, 0)
     }
-    var selectedTab by remember { mutableStateOf("format") }
-    var showPickerDialog by remember { mutableStateOf(false) }
+    var selectedTab by rememberSaveable { mutableStateOf("format") }
+    var showPickerDialog by rememberSaveable { mutableStateOf(false) }
 
     // 处理外部传入的图片URI（从文件管理器打开或分享）
     LaunchedEffect(externalImageUris) {
