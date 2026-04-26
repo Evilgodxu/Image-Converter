@@ -34,6 +34,32 @@ class HomeViewModel(
         }
     }
 
+    /**
+     * 验证输出目录权限是否有效
+     */
+    fun validateOutputDirectory(context: Context): Boolean {
+        val uriString = _uiState.value.outputDirectory ?: return false
+        return try {
+            val uri = Uri.parse(uriString)
+            // 尝试读取目录验证权限
+            val docUri = DocumentsContract.buildDocumentUriUsingTree(
+                uri,
+                DocumentsContract.getTreeDocumentId(uri)
+            )
+            context.contentResolver.query(docUri, null, null, null, null)?.use { cursor ->
+                cursor.moveToFirst()
+            }
+            true
+        } catch (e: Exception) {
+            // 权限失效，清除保存的目录
+            viewModelScope.launch {
+                userPreferencesRepository.setOutputDirectory(null)
+                _uiState.value = _uiState.value.copy(outputDirectory = null)
+            }
+            false
+        }
+    }
+
     fun setSelectedImages(context: Context, uris: List<Uri>) {
         viewModelScope.launch {
             // 清理旧临时文件
