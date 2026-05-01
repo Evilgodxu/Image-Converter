@@ -32,6 +32,7 @@
     <string name="home_converting_progress">转换中 %1$d/%2$d</string>
     <string name="home_quality_worst">最差质量</string>
     <string name="home_quality_best">最优质量</string>
+    <string name="press_back_again_to_exit">再按一次退出程序</string>
     <string name="error_load_image">无法加载图片: %s</string>
     <string name="error_convert_image">转换失败: %s</string>
     <string name="error_unknown">未知错误</string>

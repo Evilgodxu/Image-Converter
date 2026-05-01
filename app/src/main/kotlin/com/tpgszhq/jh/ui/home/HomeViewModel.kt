@@ -130,6 +130,41 @@ class HomeViewModel(
         }
     }
 
+    // 清理应用缓存和临时文件后退出程序
+    fun clearAllCacheAndExit(context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // 清理临时图片目录
+                clearTempImages(context)
+                // 清理应用所有缓存目录（cacheDir 和 codeCacheDir）
+                listOf(context.cacheDir, context.codeCacheDir).forEach { dir ->
+                    dir?.listFiles()?.forEach { file ->
+                        deleteRecursively(file)
+                    }
+                }
+                // 清理 WebView 缓存
+                context.deleteDatabase("webviewCache.db")
+                context.deleteDatabase("webview.db")
+                // 清理 Coil 图片缓存
+                coil3.SingletonImageLoader.get(context).diskCache?.clear()
+                coil3.SingletonImageLoader.get(context).memoryCache?.clear()
+            } catch (e: Exception) {
+                // 清理失败也继续退出
+            } finally {
+                withContext(Dispatchers.Main) {
+                    android.os.Process.killProcess(android.os.Process.myPid())
+                }
+            }
+        }
+    }
+
+    private fun deleteRecursively(file: File) {
+        if (file.isDirectory) {
+            file.listFiles()?.forEach { deleteRecursively(it) }
+        }
+        file.delete()
+    }
+
     // 将图片复制到应用临时目录
     private fun copyImageToTemp(context: Context, sourceUri: Uri, fileName: String): Uri? {
         return try {
@@ -314,9 +349,6 @@ class HomeViewModel(
                     else -> ConvertStatus.Success(outputUris)
                 }
             )
-
-            // 转换完成后清理临时文件
-            clearTempImages(context)
         }
     }
 

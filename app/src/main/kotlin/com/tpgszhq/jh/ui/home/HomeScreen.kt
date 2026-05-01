@@ -2,6 +2,8 @@ package com.tpgszhq.jh.ui.home
 
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -36,7 +38,9 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.tpgszhq.jh.R
-import com.tpgszhq.jh.ui.adaptive.rememberWindowSizeInfo
+import com.tpgszhq.jh.ui.adaptive.rememberWindowWidthSizeClass
+import androidx.window.core.layout.WindowWidthSizeClass
+import com.tpgszhq.jh.ui.localization.LocalLanguageManager
 import com.tpgszhq.jh.ui.localization.stringResource
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.material.icons.filled.Remove
@@ -49,18 +53,39 @@ import androidx.compose.ui.window.DialogProperties
 fun HomeScreen(
     onNavigateToSettings: () -> Unit,
     externalImageUris: List<Uri> = emptyList(),
+    language: String = "system",
     viewModel: HomeViewModel = koinViewModel(),
 ) {
     val context = LocalContext.current
-    val windowSizeInfo = rememberWindowSizeInfo()
+    val windowWidthSizeClass = rememberWindowWidthSizeClass()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val topBarInsets = if (windowSizeInfo.isCompact) {
+    val topBarInsets = if (windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
         WindowInsets.statusBars
     } else {
         WindowInsets(0, 0, 0, 0)
     }
     var selectedTab by rememberSaveable { mutableStateOf("format") }
     var showPickerDialog by rememberSaveable { mutableStateOf(false) }
+
+    // 双击返回退出
+    val languageManager = LocalLanguageManager.current
+    var backPressedTime by remember { mutableStateOf(0L) }
+    BackHandler {
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - backPressedTime <= 2000) {
+            viewModel.clearAllCacheAndExit(context)
+        } else {
+            backPressedTime = currentTime
+            val localizedResources = languageManager.getLocalizedResources(
+                languageManager.resolveLocale(language)
+            )
+            Toast.makeText(
+                context,
+                localizedResources.getString(R.string.press_back_again_to_exit),
+                Toast.LENGTH_SHORT,
+            ).show()
+        }
+    }
 
     // 处理外部传入的图片URI（从文件管理器打开或分享）
     LaunchedEffect(externalImageUris) {
@@ -205,7 +230,7 @@ fun HomeScreen(
             .consumeWindowInsets(innerPadding)
             .padding(innerPadding)
 
-        if (windowSizeInfo.isCompact) {
+        if (windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
             // 手机竖屏：单列布局
             CompactHomeContent(
                 uiState = uiState,

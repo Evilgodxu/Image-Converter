@@ -20,7 +20,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tpgszhq.jh.R
-import com.tpgszhq.jh.ui.adaptive.rememberWindowSizeInfo
+import com.tpgszhq.jh.ui.adaptive.rememberWindowWidthSizeClass
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.tpgszhq.jh.ui.localization.stringResource
 import org.koin.androidx.compose.koinViewModel
 
@@ -28,7 +29,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun SettingsScreen(onNavigateBack: () -> Unit, viewModel: SettingsViewModel = koinViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val windowSizeInfo = rememberWindowSizeInfo()
+    val windowWidthSizeClass = rememberWindowWidthSizeClass()
 
     val context = LocalContext.current
 
@@ -59,7 +60,7 @@ fun SettingsScreen(onNavigateBack: () -> Unit, viewModel: SettingsViewModel = ko
         return
     }
 
-    val topBarInsets = if (windowSizeInfo.isCompact) {
+    val topBarInsets = if (windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
         WindowInsets.statusBars
     } else {
         WindowInsets(0, 0, 0, 0)
@@ -88,7 +89,7 @@ fun SettingsScreen(onNavigateBack: () -> Unit, viewModel: SettingsViewModel = ko
             .padding(innerPadding)
             .padding(16.dp)
 
-        if (windowSizeInfo.isExpanded || windowSizeInfo.isMedium) {
+        if (windowWidthSizeClass != WindowWidthSizeClass.COMPACT) {
             // 横屏/平板布局：双列，支持滚动
             Row(
                 modifier = contentModifier.verticalScroll(rememberScrollState()),

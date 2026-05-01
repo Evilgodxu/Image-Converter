@@ -21,7 +21,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.rememberNavController
 import com.tpgszhq.jh.data.repository.UserPreferencesRepository
-import com.tpgszhq.jh.ui.adaptive.ProvideWindowSizeInfo
+import com.tpgszhq.jh.ui.adaptive.ProvideWindowSizeClass
 import com.tpgszhq.jh.ui.localization.LanguageManager
 import com.tpgszhq.jh.ui.localization.ProvideLanguageManager
 import com.tpgszhq.jh.ui.navigation.AppNavHost
@@ -49,6 +49,7 @@ class MainActivity : ComponentActivity() {
             val themeMode by userPreferencesRepository.themeMode.collectAsState(initial = "system")
             val privacyAccepted by userPreferencesRepository.privacyAccepted.collectAsState(initial = false)
 
+            val language by userPreferencesRepository.language.collectAsState(initial = "system")
             val darkTheme = when (themeMode) {
                 "light" -> false
                 "dark" -> true
@@ -64,8 +65,8 @@ class MainActivity : ComponentActivity() {
             }
 
             ProvideLanguageManager(languageManager) {
-                ProvideWindowSizeInfo {
-                    ImageConverterTheme(darkTheme = darkTheme, dynamicColor = false) {
+                ProvideWindowSizeClass {
+                    ImageConverterTheme(darkTheme = darkTheme) {
                         Surface(
                             modifier = Modifier.fillMaxSize(),
                             color = MaterialTheme.colorScheme.background,
@@ -76,6 +77,7 @@ class MainActivity : ComponentActivity() {
                                     startDestination = startDestination,
                                     onExitApp = { finish() },
                                     externalImageUris = externalImageUris,
+                                    language = language,
                                 )
                             } else {
                                 AppNavHost(
@@ -83,6 +85,7 @@ class MainActivity : ComponentActivity() {
                                     startDestination = Screen.Home.route,
                                     onExitApp = { finish() },
                                     externalImageUris = externalImageUris,
+                                    language = language,
                                 )
                             }
                         }

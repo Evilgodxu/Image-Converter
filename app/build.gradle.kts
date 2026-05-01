@@ -15,8 +15,8 @@ android {
         applicationId = "com.tpgszhq.jh"
         minSdk = 32
         targetSdk = 36
-        versionCode = 5
-        versionName = "1.1.2"
+        versionCode = 6
+        versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -32,32 +32,33 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
         }
     }
 
     packaging {
         resources {
             excludes += setOf(
-                "META-INF/AL2.0",
-                "META-INF/LGPL2.1",
-                "META-INF/LICENSE",
-                "META-INF/LICENSE.md",
-                "META-INF/LICENSE-notice.md",
-                "META-INF/LICENSE.txt",
-                "META-INF/NOTICE",
-                "META-INF/NOTICE.md",
-                "META-INF/NOTICE.txt",
-                "META-INF/INDEX.LIST",
-                "META-INF/DEPENDENCIES",
+                // Kotlin 模块元数据文件（每个 Kotlin 库都会生成，必然重复）
                 "META-INF/*.kotlin_module",
+                // Kotlin 协程调试探针
+                "META-INF/DebugProbesKt.bin",
+                // 常见的重复许可证文件
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/LICENSE.md",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt",
+                "META-INF/NOTICE.md",
+                // 版本控制索引文件
+                "META-INF/INDEX.LIST",
+                // 第三方库签名文件
+                "META-INF/*.SF",
+                "META-INF/*.DSA",
+                "META-INF/*.RSA",
+                // AndroidX 版本属性文件（各库独立包含，无需打包）
                 "META-INF/*.version",
-                "META-INF/versions/**",
                 "META-INF/androidx/**",
-                "META-INF/com/**",
-                "META-INF/services/**",
-                "META-INF/version-control-info.textproto",
-                "DebugProbesKt.bin"
             )
         }
     }

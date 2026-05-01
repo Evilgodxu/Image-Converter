@@ -16,6 +16,7 @@ fun AppNavHost(
     startDestination: String,
     onExitApp: () -> Unit,
     externalImageUris: List<Uri> = emptyList(),
+    language: String = "system",
     modifier: Modifier = Modifier,
 ) {
     NavHost(
@@ -40,13 +41,14 @@ fun AppNavHost(
                     navController.navigate(Screen.Settings.route)
                 },
                 externalImageUris = externalImageUris,
+                language = language,
             )
         }
 
         composable(Screen.Settings.route) {
             SettingsScreen(
                 onNavigateBack = {
-                    navController.popBackStack()
+                    navController.navigateUp()
                 },
             )
         }
