@@ -1,0 +1,15 @@
+*.iml
+.kotlin
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+/app/build
+jh.keystore
+.superpowers
+Material Symbols
+示例
