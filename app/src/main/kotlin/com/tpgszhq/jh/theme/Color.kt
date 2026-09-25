@@ -1,4 +1,4 @@
-package com.tpgszhq.jh.ui.theme
+package com.tpgszhq.jh.theme
 
 import androidx.compose.ui.graphics.Color
 

@@ -1,37 +1,70 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+}
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
 }
 
 android {
     namespace = "com.tpgszhq.jh"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.tpgszhq.jh"
-        minSdk = 32
-        targetSdk = 36
+        minSdk = 33
+        targetSdk = 37
         versionCode = 6
         versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        ndk {
+            abiFilters += listOf("arm64-v8a")
+        }
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file("../jh.keystore")
+            storePassword = localProperties.getProperty("KEYSTORE_PASSWORD", "")
+            keyAlias = localProperties.getProperty("KEY_ALIAS", "jh")
+            keyPassword = localProperties.getProperty("KEY_PASSWORD", "")
+        }
+    }
+
+    androidResources {
         // 禁用按语言分包，支持应用内语言切换
-        resourceConfigurations += listOf("zh", "en")
+        localeFilters += listOf("zh", "en")
+    }
+
+    // 语言资源不分包，确保运行时语言切换可用
+    bundle {
+        language {
+            enableSplit = false
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            isCrunchPngs = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
+        }
+        debug {
+            isDebuggable = true
         }
     }
 
@@ -42,6 +75,7 @@ android {
                 "META-INF/*.kotlin_module",
                 // Kotlin 协程调试探针
                 "META-INF/DebugProbesKt.bin",
+                "DebugProbesKt.bin",
                 // 常见的重复许可证文件
                 "META-INF/DEPENDENCIES",
                 "META-INF/LICENSE",
@@ -69,6 +103,29 @@ android {
     buildFeatures {
         compose = true
     }
+    lint {
+        // 质量门禁：Lint Error 阻断构建，release 变体同规则
+        abortOnError = true
+        checkReleaseBuilds = true
+    }
+}
+
+// 构建产物统一命名为 ImageConverter-<versionName>-arm64.apk
+val apkVersionName = android.defaultConfig.versionName ?: "0.0.0"
+
+kotlin {
+    compilerOptions {
+        // Kotlin 编译警告提级为 Error，弃用 API 告警源头清零
+        allWarningsAsErrors.set(true)
+    }
+}
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        variant.outputs.forEach { output ->
+            output.outputFileName.set("ImageConverter-$apkVersionName-arm64.apk")
+        }
+    }
 }
 
 dependencies {
@@ -81,32 +138,27 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
-    implementation(libs.androidx.compose.material.icons.core)
-    implementation(libs.androidx.compose.material.icons.extended)
 
-    // 导航框架
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.navigation.runtime)
+    // 导航框架 Navigation3
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
 
-    // 依赖注入 Koin
-    implementation(libs.koin.android)
-    implementation(libs.koin.androidx.compose)
-    implementation(libs.koin.core)
+    // Navigation3 页面级 ViewModel 作用域支持
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // 键值存储 DataStore
-    implementation(libs.androidx.datastore)
     implementation(libs.androidx.datastore.preferences)
 
-    // 自适应布局
-    implementation(libs.androidx.material3.adaptive)
-    implementation(libs.androidx.material3.adaptive.layout)
-    implementation(libs.androidx.material3.adaptive.navigation)
+    // Kotlin Serialization
+    implementation(libs.kotlinx.serialization.json)
 
-    // 图片加载 Coil
+    // 图片加载：首页图片预览
     implementation(libs.coil.compose)
     implementation(libs.coil.gif)
 
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)

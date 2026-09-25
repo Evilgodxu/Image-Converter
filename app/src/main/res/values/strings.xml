@@ -4,11 +4,11 @@
     <!-- 隐私页 -->
     <string name="privacy_title">隐私政策</string>
     <string name="privacy_permissions_title">应用权限</string>
-    <string name="privacy_permissions_content">本应用不需要任何系统权限即可正常运行。\n\n所有功能均基于 Android 系统提供的标准组件实现，无需申请额外权限。</string>
+    <string name="privacy_permissions_content">图片转换功能不需要任何系统权限，也不会访问网络。\n\n仅在以下场景会用到权限：\n• 网络访问：检查更新时查询项目发布页\n• 通知：展示更新包下载进度\n• 安装未知应用：安装更新包时由系统安装器引导授权\n\n拒绝以上权限不影响图片转换。</string>
     <string name="privacy_data_collection_title">数据收集</string>
     <string name="privacy_data_collection_content">本应用不收集任何用户个人信息。\n\n仅存储以下本地设置：\n• 主题偏好\n• 语言偏好\n• 输出目录设置\n\n所有数据仅保存在您的设备本地，不会上传至任何服务器。</string>
     <string name="privacy_network_title">网络连接</string>
-    <string name="privacy_network_content">本应用完全离线运行，不需要网络连接。\n\n所有图片处理均在本地完成，不会将任何数据发送至互联网。</string>
+    <string name="privacy_network_content">图片转换完全离线运行，所有图片处理均在本地完成。\n\n仅当您主动检查更新或下载更新包时，才会访问 GitHub 项目发布页；该过程不会上传任何图片或个人信息。</string>
     <string name="privacy_accept">同意</string>
     <string name="privacy_reject">拒绝</string>
 
@@ -25,9 +25,10 @@
     <string name="home_tab_format">格式</string>
     <string name="home_tab_quality">质量</string>
     <string name="home_quality_label">质量: %d%%</string>
+    <string name="home_quality_decrease">降低质量</string>
+    <string name="home_quality_increase">提高质量</string>
     <string name="home_converting">转换中…</string>
     <string name="home_convert_success">转换成功</string>
-    <string name="home_convert_failed">转换失败</string>
     <string name="home_scanning">扫描中…</string>
     <string name="home_converting_progress">转换中 %1$d/%2$d</string>
     <string name="home_quality_worst">最差质量</string>
@@ -40,14 +41,49 @@
 
     <!-- 设置页 -->
     <string name="settings_title">设置</string>
-    <string name="settings_theme_title">主题设置</string>
-    <string name="settings_language_title">语言设置</string>
+    <string name="settings_theme_title">主题</string>
+    <string name="settings_language_title">语言</string>
+    <string name="settings_section_appearance">外观</string>
+    <string name="settings_section_language">语言</string>
+    <string name="settings_theme_dialog_title">选择主题</string>
+    <string name="settings_language_dialog_title">选择语言</string>
     <string name="settings_output_directory_title">输出目录</string>
     <string name="settings_output_directory_select">选择目录</string>
     <string name="settings_output_directory_change">更改</string>
     <string name="settings_output_directory_clear">清除</string>
     <string name="settings_output_directory_not_set">未设置，转换时将提示选择</string>
     <string name="settings_output_directory_current">当前目录</string>
+    <string name="settings_version">版本 %1$s</string>
+    <string name="settings_log">[日志]</string>
+    <string name="settings_log_empty_today">今日暂无日志</string>
+    <string name="settings_share_log_title">分享日志</string>
+    <string name="settings_about_brand">图片转换</string>
+    <string name="settings_update_latest">当前已是最新版本</string>
+    <string name="settings_update_failed">检查更新失败，请稍后重试</string>
+    <string name="settings_update_incomplete">该版本缺少可用的安装包，已中止更新</string>
+
+    <!-- 更新 -->
+    <string name="update_dialog_title">发现新版本 %1$s</string>
+    <string name="update_dialog_no_changelog">本次更新暂无说明</string>
+    <string name="update_dialog_downloading_title">正在下载更新</string>
+    <string name="update_dialog_progress">已下载 %1$d%%</string>
+    <string name="update_dialog_failed_title">下载失败</string>
+    <string name="update_dialog_install_ready_title">下载完成</string>
+    <string name="update_dialog_install_ready_hint">安装包已通过校验，点击「更新」交由系统安装器安装。</string>
+    <string name="update_action_update">更新</string>
+    <string name="update_action_later">稍后</string>
+    <string name="update_action_hide">隐藏</string>
+    <string name="update_action_retry">重试</string>
+    <string name="update_failure_timeout">下载超时，请稍后重试</string>
+    <string name="update_failure_network">网络异常，请检查网络后重试</string>
+    <string name="update_failure_digest">安装包校验未通过，已中止安装</string>
+    <string name="update_failure_storage">存储写入失败，请检查存储空间</string>
+    <string name="update_notification_channel">应用更新</string>
+    <string name="update_notification_downloading">正在下载更新</string>
+    <string name="update_notification_progress">已下载 %1$d%%</string>
+    <string name="update_notification_completed">更新包下载完成</string>
+    <string name="update_notification_completed_hint">点击安装新版本</string>
+    <string name="update_notification_failed">更新下载失败</string>
 
     <!-- 主题选项 -->
     <string name="theme_system">跟随系统</string>

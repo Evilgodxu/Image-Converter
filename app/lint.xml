@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  弃用 API（Deprecated）与 UnsafeOptIn 提级为 Error，
+  abortOnError 开启时任一 Error 即阻断构建；禁止新增 baseline 压后处理。
+-->
+<lint>
+    <issue id="Deprecated" severity="error" />
+    <issue id="UnsafeOptInUsageError" severity="error" />
+    <issue id="UnsafeOptInUsageWarning" severity="error" />
+    <!--
+      本应用刻意只发布 arm64-v8a（APK 命名亦为 -arm64），
+      ChromeOS 的 x86_64 兼容交给系统二进制翻译，故忽略该检查。
+    -->
+    <issue id="ChromeOsAbiSupport" severity="ignore" />
+</lint>

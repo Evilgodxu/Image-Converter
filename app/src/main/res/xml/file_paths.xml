@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 仅暴露应用专属目录下需要的子目录：日志分享、更新包安装 -->
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-files-path
+        name="logs"
+        path="logs/" />
+    <cache-path
+        name="updates"
+        path="updates/" />
+</paths>
